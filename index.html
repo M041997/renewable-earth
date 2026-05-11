@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Renewable Earth — Solar & Wind Powered Globe</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(ellipse at center, #0a0e2a 0%, #000 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #fff;
+  }
+  #canvas { display: block; }
+
+  #title {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+    text-shadow: 0 0 12px rgba(80, 200, 255, 0.6);
+  }
+  #title h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, #ffd34e, #6ee7ff, #5be584);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  #title p {
+    margin: 6px 0 0;
+    font-size: 12px;
+    opacity: 0.7;
+    letter-spacing: 2px;
+  }
+
+  #stats {
+    position: absolute;
+    top: 100px;
+    left: 24px;
+    background: rgba(10, 20, 40, 0.55);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(110, 231, 255, 0.25);
+    border-radius: 12px;
+    padding: 16px 18px;
+    width: 260px;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+  #stats h2 {
+    margin: 0 0 10px;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    color: #6ee7ff;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px dashed rgba(255,255,255,0.08);
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-label { opacity: 0.75; }
+  .stat-good { color: #5be584; font-weight: 500; }
+  .stat-bad { color: #ff7a7a; font-weight: 500; }
+
+  #benefits {
+    position: absolute;
+    top: 100px;
+    right: 24px;
+    background: rgba(10, 20, 40, 0.55);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(91, 229, 132, 0.25);
+    border-radius: 12px;
+    padding: 16px 18px;
+    width: 280px;
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+  #benefits h2 {
+    margin: 0 0 10px;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    color: #5be584;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  #benefits ul { padding-left: 18px; margin: 0; }
+  #benefits li { margin-bottom: 6px; opacity: 0.9; }
+  #benefits li b { color: #ffd34e; font-weight: 500; }
+
+  #controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 20, 40, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 40px;
+    padding: 8px 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    padding: 7px 14px;
+    border-radius: 30px;
+    font-size: 11.5px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: rgba(110, 231, 255, 0.18); border-color: #6ee7ff; }
+  .btn.active { background: rgba(91, 229, 132, 0.2); border-color: #5be584; color: #5be584; }
+
+  #hint {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    opacity: 0.5;
+    letter-spacing: 1px;
+    pointer-events: none;
+  }
+
+  /* WHAT-IF PANEL */
+  #cosmic {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    display: none;
+  }
+  #cosmic.active { display: block; }
+  #cosmic-panel {
+    position: absolute;
+    top: 100px;
+    left: 24px;
+    background: rgba(10, 20, 40, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 211, 78, 0.3);
+    border-radius: 12px;
+    padding: 18px 20px;
+    width: 340px;
+    pointer-events: auto;
+    font-size: 12px;
+  }
+  #cosmic-panel h2 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    color: #ffd34e;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  #cosmic-panel .sub {
+    font-size: 11px;
+    opacity: 0.65;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .source-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .src-tab {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #fff;
+    padding: 9px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .src-tab:hover { background: rgba(255,255,255,0.1); }
+  .src-tab.active {
+    background: rgba(255, 211, 78, 0.15);
+    border-color: #ffd34e;
+    color: #ffd34e;
+  }
+  .src-tab[data-src="wind"].active {
+    background: rgba(110, 231, 255, 0.15);
+    border-color: #6ee7ff;
+    color: #6ee7ff;
+  }
+
+  .amount-display {
+    text-align: center;
+    margin: 6px 0 10px;
+  }
+  .amount-num {
+    font-size: 30px;
+    font-weight: 300;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .amount-unit {
+    font-size: 11px;
+    opacity: 0.6;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  #amount-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: linear-gradient(90deg, rgba(255,211,78,0.2), rgba(255,211,78,0.6));
+    border-radius: 2px;
+    outline: none;
+    margin: 6px 0 16px;
+  }
+  #amount-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #ffd34e;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(255, 211, 78, 0.7);
+  }
+  #amount-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #ffd34e;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+
+  .presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .preset {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #ddd;
+    padding: 6px 10px;
+    border-radius: 16px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .preset:hover {
+    background: rgba(255, 211, 78, 0.15);
+    border-color: #ffd34e;
+    color: #ffd34e;
+  }
+
+  .total-output {
+    text-align: center;
+    padding: 12px 0 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .total-output .label {
+    font-size: 11px;
+    opacity: 0.7;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .total-output .big-number {
+    font-size: 24px;
+    color: #5be584;
+    font-weight: 400;
+    margin: 4px 0;
+    letter-spacing: 0.5px;
+  }
+  .total-output .sub-line {
+    font-size: 11px;
+    opacity: 0.7;
+  }
+
+  #detail {
+    position: absolute;
+    top: 100px;
+    right: 24px;
+    background: rgba(10, 20, 40, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(91, 229, 132, 0.3);
+    border-radius: 12px;
+    padding: 18px 20px;
+    width: 320px;
+    pointer-events: auto;
+  }
+  #detail h2 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    color: #5be584;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  #detail .sub {
+    font-size: 11px;
+    opacity: 0.65;
+    margin-bottom: 14px;
+  }
+  .output-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .output-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .oc-val {
+    font-size: 19px;
+    color: #fff;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.5px;
+  }
+  .oc-label {
+    font-size: 10.5px;
+    opacity: 0.7;
+    margin-top: 2px;
+    line-height: 1.3;
+  }
+  .oc-card-wide {
+    grid-column: span 2;
+  }
+
+  @media (max-width: 900px) {
+    #stats, #benefits, #cosmic-panel, #detail { display: none; }
+  }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<div id="title">
+  <h1>RENEWABLE EARTH</h1>
+  <p>A SOLAR & WIND POWERED PLANET</p>
+</div>
+
+<div id="stats">
+  <h2>Earth's Energy Balance</h2>
+  <div class="stat-row"><span class="stat-label">Solar potential / hr</span><span class="stat-good">430 EJ</span></div>
+  <div class="stat-row"><span class="stat-label">Global use / yr</span><span>410 EJ</span></div>
+  <div class="stat-row"><span class="stat-label">Wind capacity</span><span class="stat-good">~95 TW</span></div>
+  <div class="stat-row"><span class="stat-label">CO₂ from coal</span><span class="stat-bad">820 g/kWh</span></div>
+  <div class="stat-row"><span class="stat-label">CO₂ from gas</span><span class="stat-bad">490 g/kWh</span></div>
+  <div class="stat-row"><span class="stat-label">CO₂ from solar</span><span class="stat-good">~45 g/kWh</span></div>
+  <div class="stat-row"><span class="stat-label">CO₂ from wind</span><span class="stat-good">~11 g/kWh</span></div>
+</div>
+
+<div id="benefits">
+  <h2>Why Natural > Fossil</h2>
+  <ul>
+    <li><b>Infinite supply.</b> The sun delivers more energy in 1 hour than humanity uses in a year.</li>
+    <li><b>Clean air.</b> No SO₂, NOₓ, or particulates — cuts respiratory illness and premature deaths.</li>
+    <li><b>Stable climate.</b> Slashes greenhouse gases that drive warming, sea level rise, and extreme weather.</li>
+    <li><b>Cheaper now.</b> Utility-scale solar and onshore wind are the cheapest new electricity sources on Earth.</li>
+    <li><b>Water-friendly.</b> Wind and solar PV use ~0 water vs thermal plants that consume billions of gallons.</li>
+    <li><b>Energy independence.</b> Sun and wind aren't imported, embargoed, or speculated on.</li>
+  </ul>
+</div>
+
+<div id="hint">drag to rotate · scroll to zoom</div>
+
+<div id="cosmic">
+  <div id="cosmic-panel">
+    <h2>What Could We Power?</h2>
+    <div class="sub">Pick a source and an amount. See what it could actually run on Earth.</div>
+
+    <div class="source-tabs">
+      <button class="src-tab active" data-src="solar">Solar farms</button>
+      <button class="src-tab" data-src="wind">Wind turbines</button>
+    </div>
+
+    <div class="amount-display">
+      <div class="amount-num"><span id="amount-num">100</span></div>
+      <div class="amount-unit" id="amount-unit">km² of solar panels</div>
+    </div>
+
+    <input id="amount-slider" type="range" min="0" max="7" step="0.02" value="2" />
+
+    <div class="presets" id="preset-row"></div>
+
+    <div class="total-output">
+      <div class="label">Annual energy output</div>
+      <div class="big-number" id="total-output">20 TWh</div>
+      <div class="sub-line" id="total-pct">= 0.07% of world electricity use</div>
+    </div>
+  </div>
+
+  <div id="detail">
+    <h2>This Could Power…</h2>
+    <div class="sub">…for one year, using today's technology.</div>
+    <div class="output-grid">
+      <div class="output-card">
+        <div class="oc-val" id="o-homes">—</div>
+        <div class="oc-label">US homes for a year</div>
+      </div>
+      <div class="output-card">
+        <div class="oc-val" id="o-cities">—</div>
+        <div class="oc-label">Manhattan-sized cities</div>
+      </div>
+      <div class="output-card">
+        <div class="oc-val" id="o-cars">—</div>
+        <div class="oc-label">Electric cars driven yearly</div>
+      </div>
+      <div class="output-card">
+        <div class="oc-val" id="o-hospitals">—</div>
+        <div class="oc-label">Large hospitals</div>
+      </div>
+      <div class="output-card">
+        <div class="oc-val" id="o-coal">—</div>
+        <div class="oc-label">Coal plants replaced</div>
+      </div>
+      <div class="output-card">
+        <div class="oc-val" id="o-co2">—</div>
+        <div class="oc-label">Tons CO₂ avoided / yr</div>
+      </div>
+      <div class="output-card oc-card-wide">
+        <div class="oc-val" id="o-water">—</div>
+        <div class="oc-label">Liters of seawater desalinated</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="controls">
+  <button class="btn active" data-mode="renewable">Renewable Earth</button>
+  <button class="btn" data-mode="fossil">Fossil Earth</button>
+  <button class="btn" data-mode="cosmic">What If?</button>
+  <button class="btn" data-mode="compare">Toggle Atmosphere</button>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ============================================================
+// SCENE
+// ============================================================
+const canvas = document.getElementById('canvas');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 2000);
+camera.position.set(0, 2, 9);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.minDistance = 4;
+controls.maxDistance = 30;
+
+// ============================================================
+// STARFIELD
+// ============================================================
+function makeStars(count = 4000) {
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(count * 3);
+  const col = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    const r = 200 + Math.random() * 600;
+    const t = Math.random() * Math.PI * 2;
+    const p = Math.acos(2 * Math.random() - 1);
+    pos[i*3]   = r * Math.sin(p) * Math.cos(t);
+    pos[i*3+1] = r * Math.sin(p) * Math.sin(t);
+    pos[i*3+2] = r * Math.cos(p);
+    const c = 0.6 + Math.random() * 0.4;
+    col[i*3] = c; col[i*3+1] = c; col[i*3+2] = c + Math.random() * 0.2;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  const mat = new THREE.PointsMaterial({ size: 1.2, vertexColors: true, sizeAttenuation: false });
+  return new THREE.Points(geo, mat);
+}
+scene.add(makeStars());
+
+// ============================================================
+// SUN — primary energy source
+// ============================================================
+const sunGroup = new THREE.Group();
+const sunCore = new THREE.Mesh(
+  new THREE.SphereGeometry(1.4, 48, 48),
+  new THREE.MeshBasicMaterial({ color: 0xffd34e })
+);
+sunGroup.add(sunCore);
+
+// glow
+const glowMat = new THREE.ShaderMaterial({
+  uniforms: { c: { value: 0.5 }, p: { value: 3.5 }, glowColor: { value: new THREE.Color(0xffaa33) } },
+  vertexShader: `
+    varying vec3 vNormal;
+    void main() {
+      vNormal = normalize(normalMatrix * normal);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }`,
+  fragmentShader: `
+    uniform float c;
+    uniform float p;
+    uniform vec3 glowColor;
+    varying vec3 vNormal;
+    void main() {
+      float intensity = pow(c - dot(vNormal, vec3(0,0,1.0)), p);
+      gl_FragColor = vec4(glowColor, 1.0) * intensity;
+    }`,
+  side: THREE.BackSide,
+  blending: THREE.AdditiveBlending,
+  transparent: true
+});
+sunGroup.add(new THREE.Mesh(new THREE.SphereGeometry(2.2, 48, 48), glowMat));
+sunGroup.position.set(-12, 4, -8);
+scene.add(sunGroup);
+
+const sunLight = new THREE.PointLight(0xffeacc, 3.0, 0, 0);
+sunLight.position.copy(sunGroup.position);
+scene.add(sunLight);
+scene.add(new THREE.AmbientLight(0x404060, 0.25));
+
+// ============================================================
+// EARTH
+// ============================================================
+const earthGroup = new THREE.Group();
+scene.add(earthGroup);
+
+// Procedural earth texture (canvas-based — no external assets needed)
+function makeEarthTexture() {
+  const w = 1024, h = 512;
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+
+  // ocean
+  const og = ctx.createLinearGradient(0, 0, 0, h);
+  og.addColorStop(0, '#0a3b7a');
+  og.addColorStop(0.5, '#1565b8');
+  og.addColorStop(1, '#0a3b7a');
+  ctx.fillStyle = og;
+  ctx.fillRect(0, 0, w, h);
+
+  // continents — stylized blob shapes
+  const land = '#2d8a3e';
+  const landDark = '#1f6b2f';
+  ctx.fillStyle = land;
+
+  function blob(cx, cy, rx, ry, points = 18, jitter = 0.3) {
+    ctx.beginPath();
+    for (let i = 0; i <= points; i++) {
+      const a = (i / points) * Math.PI * 2;
+      const j = 1 + (Math.random() - 0.5) * jitter;
+      const x = cx + Math.cos(a) * rx * j;
+      const y = cy + Math.sin(a) * ry * j;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // North America
+  blob(200, 170, 90, 60);
+  blob(180, 230, 50, 40);
+  // South America
+  blob(290, 340, 40, 70);
+  // Europe
+  blob(500, 160, 55, 40);
+  // Africa
+  blob(530, 290, 60, 80);
+  // Asia
+  blob(700, 180, 130, 70);
+  blob(780, 250, 60, 40);
+  // Australia
+  blob(820, 380, 55, 35);
+  // Antarctica
+  ctx.fillRect(0, 480, w, 32);
+  // Greenland
+  blob(370, 90, 35, 25);
+
+  // darken edges for depth
+  ctx.globalAlpha = 0.3;
+  ctx.fillStyle = landDark;
+  for (let i = 0; i < 300; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    const px = ctx.getImageData(x, y, 1, 1).data;
+    if (px[1] > 100) ctx.fillRect(x, y, 3 + Math.random() * 6, 3 + Math.random() * 6);
+  }
+  ctx.globalAlpha = 1;
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+const earthTex = makeEarthTexture();
+const earth = new THREE.Mesh(
+  new THREE.SphereGeometry(2, 96, 96),
+  new THREE.MeshStandardMaterial({
+    map: earthTex,
+    roughness: 0.85,
+    metalness: 0.05,
+    emissive: 0x112244,
+    emissiveIntensity: 0.08
+  })
+);
+earthGroup.add(earth);
+
+// Atmosphere glow
+const atmosphere = new THREE.Mesh(
+  new THREE.SphereGeometry(2.15, 64, 64),
+  new THREE.ShaderMaterial({
+    uniforms: { color: { value: new THREE.Color(0x5bb6ff) } },
+    vertexShader: `
+      varying vec3 vNormal;
+      void main() {
+        vNormal = normalize(normalMatrix * normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }`,
+    fragmentShader: `
+      uniform vec3 color;
+      varying vec3 vNormal;
+      void main() {
+        float intensity = pow(0.65 - dot(vNormal, vec3(0,0,1.0)), 2.5);
+        gl_FragColor = vec4(color, 1.0) * intensity;
+      }`,
+    side: THREE.BackSide,
+    blending: THREE.AdditiveBlending,
+    transparent: true
+  })
+);
+earthGroup.add(atmosphere);
+
+// Clouds
+function makeCloudTexture() {
+  const w = 1024, h = 512;
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  for (let i = 0; i < 80; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    const r = 20 + Math.random() * 50;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, 'rgba(255,255,255,0.9)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const clouds = new THREE.Mesh(
+  new THREE.SphereGeometry(2.04, 64, 64),
+  new THREE.MeshStandardMaterial({
+    map: makeCloudTexture(),
+    transparent: true,
+    opacity: 0.45,
+    depthWrite: false
+  })
+);
+earthGroup.add(clouds);
+
+// ============================================================
+// RENEWABLE ENERGY ASSETS ON EARTH SURFACE
+// ============================================================
+const renewableGroup = new THREE.Group();
+earthGroup.add(renewableGroup);
+
+const turbines = [];
+const panels = [];
+
+function latLonToVec3(lat, lon, r) {
+  const phi = (90 - lat) * Math.PI / 180;
+  const theta = (lon + 180) * Math.PI / 180;
+  return new THREE.Vector3(
+    -r * Math.sin(phi) * Math.cos(theta),
+     r * Math.cos(phi),
+     r * Math.sin(phi) * Math.sin(theta)
+  );
+}
+
+// Wind turbine factory
+function makeTurbine() {
+  const g = new THREE.Group();
+  const poleMat = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, roughness: 0.4 });
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.018, 0.28, 8), poleMat);
+  pole.position.y = 0.14;
+  g.add(pole);
+
+  const hub = new THREE.Mesh(new THREE.SphereGeometry(0.025, 12, 12), poleMat);
+  hub.position.y = 0.28;
+  g.add(hub);
+
+  const rotor = new THREE.Group();
+  rotor.position.y = 0.28;
+  const bladeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
+  for (let i = 0; i < 3; i++) {
+    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.18, 0.005), bladeMat);
+    blade.position.y = 0.09;
+    blade.rotation.z = (i * Math.PI * 2) / 3;
+    const wrap = new THREE.Group();
+    wrap.rotation.z = (i * Math.PI * 2) / 3;
+    const b2 = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.18, 0.005), bladeMat);
+    b2.position.y = 0.09;
+    wrap.add(b2);
+    rotor.add(wrap);
+  }
+  g.add(rotor);
+  g.userData.rotor = rotor;
+  return g;
+}
+
+// Solar panel factory
+function makeSolarPanel() {
+  const g = new THREE.Group();
+  const panelMat = new THREE.MeshStandardMaterial({
+    color: 0x1a3a7a,
+    emissive: 0x2a5aaa,
+    emissiveIntensity: 0.3,
+    roughness: 0.2,
+    metalness: 0.6
+  });
+  const frameMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.5 });
+
+  const stand = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.04, 6), frameMat);
+  stand.position.y = 0.02;
+  g.add(stand);
+
+  const panel = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.004, 0.08), panelMat);
+  panel.position.y = 0.05;
+  panel.rotation.x = -0.4;
+  g.add(panel);
+
+  // grid lines on panel (small inset boxes)
+  for (let i = -1; i <= 1; i++) {
+    const line = new THREE.Mesh(new THREE.BoxGeometry(0.002, 0.005, 0.08), frameMat);
+    line.position.set(i * 0.04, 0.05, 0);
+    line.rotation.x = -0.4;
+    g.add(line);
+  }
+  return g;
+}
+
+// Place renewable assets on land regions
+const WIND_SITES = [
+  // [lat, lon] — concentrated on coasts and plains
+  [55, -3], [50, 5], [45, -1], [40, -5], [60, 10],
+  [42, -100], [45, -110], [35, -100], [30, -95], [50, -95],
+  [-25, 130], [-30, 145], [-35, 150],
+  [35, 105], [40, 115], [30, 90], [25, 80],
+  [55, 60], [50, 80], [60, 30],
+  [-5, -40], [-20, -45], [-30, -60],
+  [10, 8], [-5, 25], [-15, 30], [25, 25], [-25, 28],
+];
+const SOLAR_SITES = [
+  // sun-belt regions
+  [33, -115], [25, -100], [30, -85], [15, -90],
+  [25, 50], [30, 35], [22, 78], [25, 45], [28, 30],
+  [-25, 25], [-15, 22], [10, 5], [-30, 150],
+  [40, -3], [38, 23], [35, 10],
+  [-15, -70], [-25, -65], [-20, -50],
+  [40, 116], [35, 130],
+];
+
+const surfaceR = 2.01;
+WIND_SITES.forEach(([lat, lon]) => {
+  const t = makeTurbine();
+  const pos = latLonToVec3(lat, lon, surfaceR);
+  t.position.copy(pos);
+  t.lookAt(0, 0, 0);
+  t.rotateX(Math.PI / 2);
+  t.scale.setScalar(1.4);
+  renewableGroup.add(t);
+  turbines.push(t);
+});
+SOLAR_SITES.forEach(([lat, lon]) => {
+  const p = makeSolarPanel();
+  const pos = latLonToVec3(lat, lon, surfaceR);
+  p.position.copy(pos);
+  p.lookAt(0, 0, 0);
+  p.rotateX(Math.PI / 2);
+  p.scale.setScalar(1.5);
+  renewableGroup.add(p);
+  panels.push(p);
+});
+
+// ============================================================
+// SOLAR RAYS — animated lines from sun to panels
+// ============================================================
+const rayGroup = new THREE.Group();
+scene.add(rayGroup);
+
+function buildRays() {
+  rayGroup.clear();
+  panels.forEach((p, i) => {
+    if (i % 3 !== 0) return; // not every panel, keep visual clean
+    const worldPos = new THREE.Vector3();
+    p.getWorldPosition(worldPos);
+    const points = [sunGroup.position.clone(), worldPos];
+    const geo = new THREE.BufferGeometry().setFromPoints(points);
+    const mat = new THREE.LineBasicMaterial({
+      color: 0xffd34e,
+      transparent: true,
+      opacity: 0.25,
+      blending: THREE.AdditiveBlending
+    });
+    const line = new THREE.Line(geo, mat);
+    line.userData.phase = Math.random() * Math.PI * 2;
+    rayGroup.add(line);
+  });
+}
+
+// ============================================================
+// FOSSIL MODE — smokestacks + pollution haze
+// ============================================================
+const fossilGroup = new THREE.Group();
+fossilGroup.visible = false;
+earthGroup.add(fossilGroup);
+
+const smokestacks = [];
+function makeSmokestack() {
+  const g = new THREE.Group();
+  const baseMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.9 });
+  const stack = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.025, 0.18, 8), baseMat);
+  stack.position.y = 0.09;
+  g.add(stack);
+  const cap = new THREE.Mesh(new THREE.TorusGeometry(0.022, 0.005, 6, 12), baseMat);
+  cap.position.y = 0.18;
+  cap.rotation.x = Math.PI / 2;
+  g.add(cap);
+
+  // smoke particles
+  const smokeMat = new THREE.MeshBasicMaterial({
+    color: 0x666666,
+    transparent: true,
+    opacity: 0.5,
+    depthWrite: false
+  });
+  const smokeParticles = [];
+  for (let i = 0; i < 6; i++) {
+    const s = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), smokeMat.clone());
+    s.position.set(0, 0.2 + i * 0.04, 0);
+    s.userData.offset = i * 0.04;
+    smokeParticles.push(s);
+    g.add(s);
+  }
+  g.userData.smoke = smokeParticles;
+  return g;
+}
+
+// place smokestacks where renewables were (to show the contrast)
+[...WIND_SITES, ...SOLAR_SITES].forEach(([lat, lon]) => {
+  const s = makeSmokestack();
+  const pos = latLonToVec3(lat, lon, surfaceR);
+  s.position.copy(pos);
+  s.lookAt(0, 0, 0);
+  s.rotateX(Math.PI / 2);
+  s.scale.setScalar(1.3);
+  fossilGroup.add(s);
+  smokestacks.push(s);
+});
+
+// pollution shell (brownish haze around earth)
+const pollutionShell = new THREE.Mesh(
+  new THREE.SphereGeometry(2.12, 64, 64),
+  new THREE.MeshBasicMaterial({
+    color: 0x8b6a3f,
+    transparent: true,
+    opacity: 0.18,
+    depthWrite: false
+  })
+);
+pollutionShell.visible = false;
+earthGroup.add(pollutionShell);
+
+// ============================================================
+// WHAT IF? — INPUT/OUTPUT CALCULATIONS
+// ============================================================
+// Real-world numbers, sourced from common engineering estimates.
+// Energies in kWh/year unless noted.
+
+// Solar farm production — utility-scale PV in good locations,
+// accounting for spacing, panel efficiency (~20%), capacity factor (~22%):
+//   ~200 GWh/km²/year = 200,000,000 kWh/km²/year
+const SOLAR_KWH_PER_KM2_YR = 200_000_000;
+
+// Modern wind turbine: ~3 MW rated, ~35% capacity factor
+//   = 3000 kW * 8760 hr * 0.35 ≈ 9.2 GWh/year
+const WIND_KWH_PER_TURBINE_YR = 9_200_000;
+
+// Consumers (annual energy use):
+const HOME_KWH_YR        = 10_800;        // average US household
+const MANHATTAN_KWH_YR   = 11_000_000_000; // ~11 TWh for Manhattan (residential+commercial)
+const EV_KWH_YR          = 4_000;          // 12,000 mi at 3 mi/kWh
+const HOSPITAL_KWH_YR    = 30_000_000;     // large hospital
+const COAL_PLANT_KWH_YR  = 4_380_000_000;  // 1 GW @ 50% CF
+const COAL_CO2_PER_KWH   = 0.82;           // kg
+const DESAL_KWH_PER_M3   = 3;              // RO desal, kWh per m³
+
+const WORLD_ELEC_TWH_YR  = 30_000;         // global electricity demand ~30 PWh
+
+// Slider state — log scale
+//   solar: 10^x km², x from 0 to 7 (1 km² to 10M km²)
+//   wind:  10^x turbines, x from 0 to 6 (1 to 1M turbines)
+let source = 'solar';
+let amountExp = 2; // start at 100
+
+const PRESETS = {
+  solar: [
+    { label: 'Football field (0.007)', exp: Math.log10(0.007) },
+    { label: 'Manhattan (59)',         exp: Math.log10(59) },
+    { label: 'Singapore (730)',        exp: Math.log10(730) },
+    { label: 'Belgium (30K)',          exp: Math.log10(30000) },
+    { label: 'Texas (696K)',           exp: Math.log10(696000) },
+    { label: 'Sahara (9.2M)',          exp: Math.log10(9_200_000) },
+  ],
+  wind: [
+    { label: '1 turbine',           exp: 0 },
+    { label: 'Wind farm (200)',     exp: Math.log10(200) },
+    { label: 'Large fleet (10K)',   exp: Math.log10(10_000) },
+    { label: 'Country-scale (100K)',exp: Math.log10(100_000) },
+    { label: 'Global fleet (1M)',   exp: 6 },
+  ],
+};
+
+function fmtNumber(n) {
+  if (!isFinite(n) || isNaN(n)) return '—';
+  if (n < 0.01) return n.toFixed(3);
+  if (n < 10) return n.toFixed(2);
+  if (n < 1000) return n.toFixed(0);
+  if (n < 1e6) return (n/1e3).toFixed(1) + 'K';
+  if (n < 1e9) return (n/1e6).toFixed(1) + 'M';
+  if (n < 1e12) return (n/1e9).toFixed(2) + 'B';
+  return (n/1e12).toFixed(2) + 'T';
+}
+
+function fmtAmount(value, src) {
+  if (src === 'solar') {
+    if (value < 1) return value.toFixed(3);
+    if (value < 100) return value.toFixed(1);
+    if (value < 1000) return value.toFixed(0);
+    if (value < 1e6) return (value/1e3).toFixed(1) + 'K';
+    return (value/1e6).toFixed(2) + 'M';
+  } else {
+    if (value < 1000) return Math.round(value).toLocaleString();
+    if (value < 1e6) return (value/1e3).toFixed(1) + 'K';
+    return (value/1e6).toFixed(2) + 'M';
+  }
+}
+
+function fmtTWh(kwh) {
+  const twh = kwh / 1e9;
+  if (twh < 0.001) return (kwh/1e6).toFixed(2) + ' GWh';
+  if (twh < 1) return twh.toFixed(3) + ' TWh';
+  if (twh < 1000) return twh.toFixed(1) + ' TWh';
+  if (twh < 1e6) return (twh/1000).toFixed(1) + ' PWh';
+  return (twh/1e6).toFixed(2) + ' EWh';
+}
+
+function updateWhatIf() {
+  const value = Math.pow(10, amountExp);
+  const totalKWh = source === 'solar'
+    ? value * SOLAR_KWH_PER_KM2_YR
+    : value * WIND_KWH_PER_TURBINE_YR;
+
+  // amount display
+  document.getElementById('amount-num').textContent = fmtAmount(value, source);
+  document.getElementById('amount-unit').textContent =
+    source === 'solar' ? 'km² of solar panels' : 'wind turbines';
+
+  // total output
+  document.getElementById('total-output').textContent = fmtTWh(totalKWh);
+  const pctWorld = (totalKWh / 1e9) / WORLD_ELEC_TWH_YR * 100;
+  let pctText;
+  if (pctWorld < 0.001) pctText = '= ' + pctWorld.toExponential(1) + '% of world electricity';
+  else if (pctWorld < 1) pctText = '= ' + pctWorld.toFixed(3) + '% of world electricity';
+  else if (pctWorld < 100) pctText = '= ' + pctWorld.toFixed(1) + '% of world electricity';
+  else pctText = '= ' + fmtNumber(pctWorld/100) + '× world electricity use';
+  document.getElementById('total-pct').textContent = pctText;
+
+  // outputs
+  document.getElementById('o-homes').textContent     = fmtNumber(totalKWh / HOME_KWH_YR);
+  document.getElementById('o-cities').textContent    = fmtNumber(totalKWh / MANHATTAN_KWH_YR);
+  document.getElementById('o-cars').textContent      = fmtNumber(totalKWh / EV_KWH_YR);
+  document.getElementById('o-hospitals').textContent = fmtNumber(totalKWh / HOSPITAL_KWH_YR);
+  document.getElementById('o-coal').textContent      = fmtNumber(totalKWh / COAL_PLANT_KWH_YR);
+  document.getElementById('o-co2').textContent       = fmtNumber(totalKWh * COAL_CO2_PER_KWH / 1000); // tons
+  document.getElementById('o-water').textContent     = fmtNumber(totalKWh / DESAL_KWH_PER_M3 * 1000) + ' L'; // m³ → L
+}
+
+function buildPresets() {
+  const row = document.getElementById('preset-row');
+  row.innerHTML = '';
+  PRESETS[source].forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'preset';
+    b.textContent = p.label;
+    b.addEventListener('click', () => {
+      amountExp = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), p.exp));
+      slider.value = amountExp;
+      updateWhatIf();
+    });
+    row.appendChild(b);
+  });
+}
+
+// Wire up controls
+const slider = document.getElementById('amount-slider');
+slider.addEventListener('input', e => {
+  amountExp = parseFloat(e.target.value);
+  updateWhatIf();
+});
+document.querySelectorAll('.src-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    source = tab.dataset.src;
+    document.querySelectorAll('.src-tab').forEach(t => t.classList.toggle('active', t === tab));
+    // adjust slider range per source
+    if (source === 'solar') {
+      slider.min = 0; slider.max = 7; slider.step = 0.02;
+      if (amountExp > 7) amountExp = 2;
+    } else {
+      slider.min = 0; slider.max = 6; slider.step = 0.02;
+      if (amountExp > 6) amountExp = 3;
+    }
+    slider.value = amountExp;
+    buildPresets();
+    updateWhatIf();
+  });
+});
+buildPresets();
+updateWhatIf();
+
+// ============================================================
+// MODES
+// ============================================================
+let mode = 'renewable';
+let atmosphereOn = true;
+
+function setMode(m) {
+  if (m === 'compare') {
+    atmosphereOn = !atmosphereOn;
+    atmosphere.visible = atmosphereOn;
+    clouds.visible = atmosphereOn;
+    return;
+  }
+  mode = m;
+  const renew = (m === 'renewable');
+  const cosmic = (m === 'cosmic');
+  const fossil = (m === 'fossil');
+
+  renewableGroup.visible = renew || cosmic;
+  rayGroup.visible = renew || cosmic;
+  fossilGroup.visible = fossil;
+  pollutionShell.visible = fossil;
+
+  // toggle side panels
+  document.getElementById('stats').style.display = cosmic ? 'none' : '';
+  document.getElementById('benefits').style.display = cosmic ? 'none' : '';
+  document.getElementById('cosmic').classList.toggle('active', cosmic);
+
+  if (cosmic) updateWhatIf();
+
+  earth.material.emissive.setHex(renew || cosmic ? 0x112244 : 0x2a1810);
+  document.querySelectorAll('.btn').forEach(b => {
+    if (['renewable', 'fossil', 'cosmic'].includes(b.dataset.mode)) {
+      b.classList.toggle('active', b.dataset.mode === m);
+    }
+  });
+}
+
+document.querySelectorAll('.btn').forEach(b => {
+  b.addEventListener('click', () => setMode(b.dataset.mode));
+});
+
+buildRays();
+
+// ============================================================
+// ANIMATION
+// ============================================================
+const clock = new THREE.Clock();
+function animate() {
+  const t = clock.getElapsedTime();
+  const dt = clock.getDelta();
+
+  earthGroup.rotation.y += 0.0015;
+  clouds.rotation.y += 0.0004;
+
+  // spin turbine rotors
+  turbines.forEach((tb, i) => {
+    tb.userData.rotor.rotation.y += 0.15 + (i % 5) * 0.02;
+  });
+
+  // shimmer solar panels
+  panels.forEach((p, i) => {
+    const mesh = p.children[1];
+    if (mesh && mesh.material) {
+      mesh.material.emissiveIntensity = 0.25 + Math.sin(t * 2 + i) * 0.15;
+    }
+  });
+
+  // pulse solar rays
+  rayGroup.children.forEach((line, i) => {
+    line.material.opacity = 0.15 + Math.sin(t * 3 + line.userData.phase) * 0.15;
+  });
+
+  // smoke rising
+  smokestacks.forEach((s) => {
+    s.userData.smoke.forEach((p, i) => {
+      p.position.y += 0.004;
+      p.material.opacity = Math.max(0, 0.5 - (p.position.y - 0.2) * 1.5);
+      if (p.position.y > 0.5) {
+        p.position.y = 0.2;
+        p.material.opacity = 0.5;
+      }
+    });
+  });
+
+  // sun subtle pulse
+  sunGroup.scale.setScalar(1 + Math.sin(t * 0.8) * 0.02);
+
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ============================================================
+// RESIZE
+// ============================================================
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
