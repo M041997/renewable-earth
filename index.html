@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Renewable Earth — Solar & Wind Powered Globe</title>
+<title>Renewable Earth — Opportunity Cost Globe</title>
 <style>
   html, body {
     margin: 0;
@@ -137,7 +137,7 @@
     pointer-events: none;
   }
 
-  /* WHAT-IF PANEL */
+  /* WHAT ELSE PANEL */
   #cosmic {
     position: absolute;
     top: 0;
@@ -199,10 +199,15 @@
     border-color: #ffd34e;
     color: #ffd34e;
   }
-  .src-tab[data-src="wind"].active {
+  .src-tab[data-src="budget"].active {
     background: rgba(110, 231, 255, 0.15);
     border-color: #6ee7ff;
     color: #6ee7ff;
+  }
+  .src-tab[data-src="country"].active {
+    background: rgba(91, 229, 132, 0.15);
+    border-color: #5be584;
+    color: #5be584;
   }
 
   .amount-display {
@@ -221,6 +226,7 @@
     letter-spacing: 1px;
     text-transform: uppercase;
     margin-top: 2px;
+    line-height: 1.35;
   }
 
   #amount-slider {
@@ -271,6 +277,141 @@
     background: rgba(255, 211, 78, 0.15);
     border-color: #ffd34e;
     color: #ffd34e;
+  }
+  .preset.active {
+    background: rgba(91, 229, 132, 0.18);
+    border-color: #5be584;
+    color: #5be584;
+  }
+  .country-search {
+    display: none;
+    margin: -6px 0 12px;
+  }
+  .country-search.active {
+    display: block;
+  }
+  .country-search input {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    outline: none;
+  }
+  .country-search input:focus {
+    border-color: #5be584;
+    box-shadow: 0 0 0 2px rgba(91, 229, 132, 0.16);
+  }
+  .map-hint {
+    display: none;
+    margin: -4px 0 12px;
+    font-size: 11px;
+    line-height: 1.45;
+    color: rgba(255,255,255,0.72);
+  }
+  .map-hint.active {
+    display: block;
+  }
+  .dot-key {
+    display: inline-block;
+    width: 14px;
+    height: 10px;
+    margin: 0 5px 1px 0;
+    border-radius: 4px;
+    background: rgba(91, 229, 132, 0.22);
+    box-shadow: 0 0 6px rgba(91, 229, 132, 0.25);
+    vertical-align: middle;
+  }
+  .dot-key.selected {
+    background: rgba(91, 229, 132, 0.95);
+    box-shadow: 0 0 10px rgba(91, 229, 132, 0.85);
+  }
+
+  .region-block {
+    display: none;
+    margin: 0 0 14px;
+  }
+  .region-block.active { display: block; }
+  .region-block .global-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(255, 122, 122, 0.08);
+    border: 1px solid rgba(255, 122, 122, 0.22);
+    margin-bottom: 10px;
+  }
+  .region-block .global-total .lbl {
+    font-size: 10.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  .region-block .global-total .val {
+    font-size: 18px;
+    color: #ff9a9a;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .region-block .section-label {
+    font-size: 10px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    opacity: 0.55;
+    margin: 8px 2px 6px;
+  }
+  .region-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 8px;
+    align-items: center;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-bottom: 2px;
+  }
+  .region-row:hover {
+    background: rgba(255,255,255,0.04);
+  }
+  .region-row.active {
+    background: rgba(91, 229, 132, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(91, 229, 132, 0.35);
+  }
+  .region-row .name {
+    font-size: 12px;
+    color: #fff;
+    opacity: 0.92;
+  }
+  .region-row.active .name {
+    color: #5be584;
+    font-weight: 500;
+  }
+  .region-row .amt {
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: #ff9a9a;
+    opacity: 0.95;
+  }
+  .region-row .bar-track {
+    grid-column: 1 / -1;
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .region-row .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255, 122, 122, 0.55), rgba(255, 154, 154, 0.85));
+    border-radius: 2px;
+    transition: width 0.25s;
+  }
+  .region-row.active .bar-fill {
+    background: linear-gradient(90deg, rgba(91, 229, 132, 0.65), rgba(160, 255, 190, 0.95));
   }
 
   .total-output {
@@ -345,13 +486,70 @@
     opacity: 0.7;
     margin-top: 2px;
     line-height: 1.3;
+    min-height: 28px;
   }
   .oc-card-wide {
     grid-column: span 2;
   }
+  .output-card.hero {
+    grid-column: span 2;
+    padding: 16px 14px;
+    background: linear-gradient(135deg, rgba(91, 229, 132, 0.12), rgba(91, 229, 132, 0.04));
+    border-color: rgba(91, 229, 132, 0.35);
+    box-shadow: 0 0 24px rgba(91, 229, 132, 0.08) inset;
+  }
+  .output-card.hero .oc-val {
+    font-size: 34px;
+    color: #5be584;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 18px rgba(91, 229, 132, 0.35);
+  }
+  .output-card.hero .oc-label {
+    font-size: 12px;
+    margin-top: 6px;
+    opacity: 0.9;
+    min-height: 0;
+    letter-spacing: 0.5px;
+  }
 
   @media (max-width: 900px) {
-    #stats, #benefits, #cosmic-panel, #detail { display: none; }
+    html, body {
+      overflow: auto;
+    }
+    #stats, #benefits {
+      display: none;
+    }
+    #title {
+      width: calc(100% - 24px);
+    }
+    #title h1 {
+      font-size: 20px;
+    }
+    #title p {
+      font-size: 10px;
+    }
+    #cosmic {
+      overflow-y: auto;
+      padding: 92px 12px 108px;
+      box-sizing: border-box;
+    }
+    #cosmic-panel,
+    #detail {
+      position: relative;
+      top: auto;
+      left: auto;
+      right: auto;
+      width: auto;
+      max-width: 420px;
+      margin: 0 auto 12px;
+    }
+    #controls {
+      width: calc(100% - 24px);
+      box-sizing: border-box;
+      overflow-x: auto;
+      justify-content: flex-start;
+    }
   }
 </style>
 </head>
@@ -359,30 +557,31 @@
 <canvas id="canvas"></canvas>
 
 <div id="title">
-  <h1>RENEWABLE EARTH</h1>
-  <p>A SOLAR & WIND POWERED PLANET</p>
+  <h1>RECLAIMED EARTH</h1>
+  <p>LAND AND MONEY TURNED TOWARD LIFE</p>
 </div>
 
 <div id="stats">
-  <h2>Earth's Energy Balance</h2>
-  <div class="stat-row"><span class="stat-label">Solar potential / hr</span><span class="stat-good">430 EJ</span></div>
-  <div class="stat-row"><span class="stat-label">Global use / yr</span><span>410 EJ</span></div>
-  <div class="stat-row"><span class="stat-label">Wind capacity</span><span class="stat-good">~95 TW</span></div>
-  <div class="stat-row"><span class="stat-label">CO₂ from coal</span><span class="stat-bad">820 g/kWh</span></div>
-  <div class="stat-row"><span class="stat-label">CO₂ from gas</span><span class="stat-bad">490 g/kWh</span></div>
-  <div class="stat-row"><span class="stat-label">CO₂ from solar</span><span class="stat-good">~45 g/kWh</span></div>
-  <div class="stat-row"><span class="stat-label">CO₂ from wind</span><span class="stat-good">~11 g/kWh</span></div>
+  <h2>Opportunity Cost</h2>
+  <div class="stat-row"><span class="stat-label">Solar land model</span><span class="stat-good">~300 MWh/acre/yr</span></div>
+  <div class="stat-row"><span class="stat-label">Utility PV land</span><span>~7.3 acre/MW</span></div>
+  <div class="stat-row"><span class="stat-label">US home use</span><span>~10.8 MWh/yr</span></div>
+  <div class="stat-row"><span class="stat-label">Coal CO2</span><span class="stat-bad">~820 g/kWh</span></div>
+  <div class="stat-row"><span class="stat-label">World military 2025</span><span class="stat-bad">$2.887T</span></div>
+  <div class="stat-row"><span class="stat-label">Solar build cost</span><span>~$1.3M/MW</span></div>
+  <div class="stat-row"><span class="stat-label">Research grant</span><span class="stat-good">$500K</span></div>
+  <div class="stat-row"><span class="stat-label">Clinic buildout</span><span class="stat-good">$5M</span></div>
 </div>
 
 <div id="benefits">
-  <h2>Why Natural > Fossil</h2>
+  <h2>What Changes</h2>
   <ul>
-    <li><b>Infinite supply.</b> The sun delivers more energy in 1 hour than humanity uses in a year.</li>
-    <li><b>Clean air.</b> No SO₂, NOₓ, or particulates — cuts respiratory illness and premature deaths.</li>
-    <li><b>Stable climate.</b> Slashes greenhouse gases that drive warming, sea level rise, and extreme weather.</li>
-    <li><b>Cheaper now.</b> Utility-scale solar and onshore wind are the cheapest new electricity sources on Earth.</li>
-    <li><b>Water-friendly.</b> Wind and solar PV use ~0 water vs thermal plants that consume billions of gallons.</li>
-    <li><b>Energy independence.</b> Sun and wind aren't imported, embargoed, or speculated on.</li>
+    <li><b>Acres become power.</b> Land reserved for compute campuses can become local electricity.</li>
+    <li><b>Budgets become futures.</b> War-scale spending can fund labs, schools, transit, grid upgrades, and repairs.</li>
+    <li><b>Cleaner air.</b> Solar output can displace fossil generation and the pollution that comes with it.</li>
+    <li><b>Distributed resilience.</b> Power, storage, and infrastructure investments spread value across communities.</li>
+    <li><b>Human capacity.</b> Science and education spending compounds through discoveries, tools, and skilled people.</li>
+    <li><b>Visible tradeoffs.</b> The calculator turns abstract acres and billions into everyday outcomes.</li>
   </ul>
 </div>
 
@@ -390,70 +589,88 @@
 
 <div id="cosmic">
   <div id="cosmic-panel">
-    <h2>What Could We Power?</h2>
-    <div class="sub">Pick a source and an amount. See what it could actually run on Earth.</div>
+    <h2>What Else Could We Build?</h2>
+    <div class="sub">Convert data-center acres into solar, or redirect war-scale dollars into renewable energy and medicine.</div>
 
     <div class="source-tabs">
-      <button class="src-tab active" data-src="solar">Solar farms</button>
-      <button class="src-tab" data-src="wind">Wind turbines</button>
+      <button class="src-tab active" data-src="land">Data-center land</button>
+      <button class="src-tab" data-src="budget">War budget</button>
+      <button class="src-tab" data-src="country">By continent</button>
     </div>
 
     <div class="amount-display">
       <div class="amount-num"><span id="amount-num">100</span></div>
-      <div class="amount-unit" id="amount-unit">km² of solar panels</div>
+      <div class="amount-unit" id="amount-unit">acres turned into solar farms</div>
     </div>
 
-    <input id="amount-slider" type="range" min="0" max="7" step="0.02" value="2" />
+    <input id="amount-slider" type="range" min="1" max="5" step="0.02" value="3" />
+
+    <div class="country-search" id="country-search-wrap">
+      <input id="country-search" type="search" placeholder="Search a continent" autocomplete="off" />
+    </div>
+    <div class="map-hint" id="map-hint">
+      <span class="dot-key"></span>glowing continent &middot;
+      <span class="dot-key selected"></span><span id="selected-region-name">selected region</span>
+    </div>
+
+    <div class="region-block" id="region-block">
+      <div class="global-total">
+        <span class="lbl">Global military spend / yr</span>
+        <span class="val" id="global-total">$2.89T</span>
+      </div>
+      <div class="section-label">Spending by region — click to focus</div>
+      <div id="region-rows"></div>
+    </div>
 
     <div class="presets" id="preset-row"></div>
 
     <div class="total-output">
-      <div class="label">Annual energy output</div>
-      <div class="big-number" id="total-output">20 TWh</div>
-      <div class="sub-line" id="total-pct">= 0.07% of world electricity use</div>
+      <div class="label" id="total-label">Annual solar output</div>
+      <div class="big-number" id="total-output">300 GWh</div>
+      <div class="sub-line" id="total-pct">= 27.8K US homes powered</div>
     </div>
   </div>
 
   <div id="detail">
-    <h2>This Could Power…</h2>
-    <div class="sub">…for one year, using today's technology.</div>
+    <h2>This Could Accomplish</h2>
+    <div class="sub" id="detail-sub">Annual results from reclaimed land.</div>
     <div class="output-grid">
-      <div class="output-card">
+      <div class="output-card hero">
         <div class="oc-val" id="o-homes">—</div>
-        <div class="oc-label">US homes for a year</div>
+        <div class="oc-label" id="l-homes">US homes powered</div>
       </div>
       <div class="output-card">
         <div class="oc-val" id="o-cities">—</div>
-        <div class="oc-label">Manhattan-sized cities</div>
+        <div class="oc-label" id="l-cities">data-center loads offset</div>
       </div>
       <div class="output-card">
         <div class="oc-val" id="o-cars">—</div>
-        <div class="oc-label">Electric cars driven yearly</div>
+        <div class="oc-label" id="l-cars">EVs driven yearly</div>
       </div>
       <div class="output-card">
         <div class="oc-val" id="o-hospitals">—</div>
-        <div class="oc-label">Large hospitals</div>
+        <div class="oc-label" id="l-hospitals">large hospitals powered</div>
       </div>
       <div class="output-card">
         <div class="oc-val" id="o-coal">—</div>
-        <div class="oc-label">Coal plants replaced</div>
+        <div class="oc-label" id="l-coal">coal plants displaced</div>
       </div>
       <div class="output-card">
         <div class="oc-val" id="o-co2">—</div>
-        <div class="oc-label">Tons CO₂ avoided / yr</div>
+        <div class="oc-label" id="l-co2">tons CO2 avoided / yr</div>
       </div>
       <div class="output-card oc-card-wide">
         <div class="oc-val" id="o-water">—</div>
-        <div class="oc-label">Liters of seawater desalinated</div>
+        <div class="oc-label" id="l-water">liters of seawater desalinated</div>
       </div>
     </div>
   </div>
 </div>
 
 <div id="controls">
-  <button class="btn active" data-mode="renewable">Renewable Earth</button>
-  <button class="btn" data-mode="fossil">Fossil Earth</button>
-  <button class="btn" data-mode="cosmic">What If?</button>
+  <button class="btn active" data-mode="renewable">Reclaimed Earth</button>
+  <button class="btn" data-mode="fossil">Extraction Path</button>
+  <button class="btn" data-mode="cosmic">What Else?</button>
   <button class="btn" data-mode="compare">Toggle Atmosphere</button>
 </div>
 
@@ -560,68 +777,110 @@ scene.add(new THREE.AmbientLight(0x404060, 0.25));
 const earthGroup = new THREE.Group();
 scene.add(earthGroup);
 
-// Procedural earth texture (canvas-based — no external assets needed)
+// Continent blob registry — deterministic shapes shared by the base earth
+// texture and the per-continent glow overlay. Each entry belongs to one of
+// the five regions in COUNTRY_SPENDING so we can selectively light it up.
+const TEX_W = 1024, TEX_H = 512;
+const CONTINENT_BLOBS = [];
+
+function pushBlob(continent, cx, cy, rx, ry, seed) {
+  let s = seed >>> 0;
+  const rng = () => {
+    s = (s + 0x6D2B79F5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const points = [];
+  const n = 18, jitter = 0.3;
+  for (let i = 0; i <= n; i++) {
+    const a = (i / n) * Math.PI * 2;
+    const j = 1 + (rng() - 0.5) * jitter;
+    points.push([cx + Math.cos(a) * rx * j, cy + Math.sin(a) * ry * j]);
+  }
+  CONTINENT_BLOBS.push({ continent, points });
+}
+
+// Americas (North + South + Greenland)
+pushBlob('The Americas', 200, 170, 90, 60, 11);
+pushBlob('The Americas', 180, 230, 50, 40, 12);
+pushBlob('The Americas', 290, 340, 40, 70, 13);
+pushBlob('The Americas', 370, 90, 35, 25, 14);
+// Europe
+pushBlob('Europe', 500, 160, 55, 40, 15);
+// Africa
+pushBlob('Africa', 530, 290, 60, 80, 16);
+// Asia and Oceania (Eurasia main + SE Asia + Australia)
+pushBlob('Asia and Oceania', 720, 180, 115, 70, 17);
+pushBlob('Asia and Oceania', 780, 250, 60, 40, 18);
+pushBlob('Asia and Oceania', 820, 380, 55, 35, 19);
+// Middle East — small region overlapping western end of Asia
+pushBlob('Middle East', 605, 215, 45, 35, 20);
+
+function fillBlobPath(ctx, points) {
+  ctx.beginPath();
+  points.forEach(([x, y], i) => {
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fill();
+}
+
 function makeEarthTexture() {
-  const w = 1024, h = 512;
   const c = document.createElement('canvas');
-  c.width = w; c.height = h;
+  c.width = TEX_W; c.height = TEX_H;
   const ctx = c.getContext('2d');
 
-  // ocean
-  const og = ctx.createLinearGradient(0, 0, 0, h);
+  const og = ctx.createLinearGradient(0, 0, 0, TEX_H);
   og.addColorStop(0, '#0a3b7a');
   og.addColorStop(0.5, '#1565b8');
   og.addColorStop(1, '#0a3b7a');
   ctx.fillStyle = og;
-  ctx.fillRect(0, 0, w, h);
+  ctx.fillRect(0, 0, TEX_W, TEX_H);
 
-  // continents — stylized blob shapes
-  const land = '#2d8a3e';
-  const landDark = '#1f6b2f';
-  ctx.fillStyle = land;
+  ctx.fillStyle = '#2d8a3e';
+  CONTINENT_BLOBS.forEach(b => fillBlobPath(ctx, b.points));
+  ctx.fillRect(0, 480, TEX_W, 32); // Antarctica
 
-  function blob(cx, cy, rx, ry, points = 18, jitter = 0.3) {
-    ctx.beginPath();
-    for (let i = 0; i <= points; i++) {
-      const a = (i / points) * Math.PI * 2;
-      const j = 1 + (Math.random() - 0.5) * jitter;
-      const x = cx + Math.cos(a) * rx * j;
-      const y = cy + Math.sin(a) * ry * j;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  // North America
-  blob(200, 170, 90, 60);
-  blob(180, 230, 50, 40);
-  // South America
-  blob(290, 340, 40, 70);
-  // Europe
-  blob(500, 160, 55, 40);
-  // Africa
-  blob(530, 290, 60, 80);
-  // Asia
-  blob(700, 180, 130, 70);
-  blob(780, 250, 60, 40);
-  // Australia
-  blob(820, 380, 55, 35);
-  // Antarctica
-  ctx.fillRect(0, 480, w, 32);
-  // Greenland
-  blob(370, 90, 35, 25);
-
-  // darken edges for depth
   ctx.globalAlpha = 0.3;
-  ctx.fillStyle = landDark;
+  ctx.fillStyle = '#1f6b2f';
   for (let i = 0; i < 300; i++) {
-    const x = Math.random() * w;
-    const y = Math.random() * h;
+    const x = Math.random() * TEX_W;
+    const y = Math.random() * TEX_H;
     const px = ctx.getImageData(x, y, 1, 1).data;
     if (px[1] > 100) ctx.fillRect(x, y, 3 + Math.random() * 6, 3 + Math.random() * 6);
   }
   ctx.globalAlpha = 1;
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+// Per-continent glow used as the earth material's emissive map.
+// All continents render a faint base glow so users see clickable regions;
+// the selected continent gets a saturated blurred halo + bright core.
+function makeContinentGlowTexture(selectedContinent) {
+  const c = document.createElement('canvas');
+  c.width = TEX_W; c.height = TEX_H;
+  const ctx = c.getContext('2d');
+
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, TEX_W, TEX_H);
+
+  ctx.fillStyle = 'rgba(91, 229, 132, 0.18)';
+  CONTINENT_BLOBS.forEach(b => fillBlobPath(ctx, b.points));
+
+  if (selectedContinent) {
+    const sel = CONTINENT_BLOBS.filter(b => b.continent === selectedContinent);
+    ctx.filter = 'blur(16px)';
+    ctx.fillStyle = 'rgba(91, 229, 132, 0.95)';
+    sel.forEach(b => fillBlobPath(ctx, b.points));
+    ctx.filter = 'none';
+    ctx.fillStyle = 'rgba(210, 255, 220, 0.95)';
+    sel.forEach(b => fillBlobPath(ctx, b.points));
+  }
 
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -643,7 +902,7 @@ earthGroup.add(earth);
 
 // Atmosphere glow
 const atmosphere = new THREE.Mesh(
-  new THREE.SphereGeometry(2.15, 64, 64),
+  new THREE.SphereGeometry(2.22, 64, 64),
   new THREE.ShaderMaterial({
     uniforms: { color: { value: new THREE.Color(0x5bb6ff) } },
     vertexShader: `
@@ -656,8 +915,8 @@ const atmosphere = new THREE.Mesh(
       uniform vec3 color;
       varying vec3 vNormal;
       void main() {
-        float intensity = pow(0.65 - dot(vNormal, vec3(0,0,1.0)), 2.5);
-        gl_FragColor = vec4(color, 1.0) * intensity;
+        float intensity = pow(0.78 - dot(vNormal, vec3(0,0,1.0)), 2.0);
+        gl_FragColor = vec4(color, 1.0) * intensity * 1.6;
       }`,
     side: THREE.BackSide,
     blending: THREE.AdditiveBlending,
@@ -852,7 +1111,7 @@ function buildRays() {
 }
 
 // ============================================================
-// FOSSIL MODE — smokestacks + pollution haze
+// EXTRACTION MODE — data halls + pollution haze
 // ============================================================
 const fossilGroup = new THREE.Group();
 fossilGroup.visible = false;
@@ -862,11 +1121,29 @@ const smokestacks = [];
 function makeSmokestack() {
   const g = new THREE.Group();
   const baseMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.9 });
+  const hallMat = new THREE.MeshStandardMaterial({
+    color: 0x161c28,
+    emissive: 0x173055,
+    emissiveIntensity: 0.35,
+    roughness: 0.65
+  });
+  const roofMat = new THREE.MeshStandardMaterial({ color: 0x7b8596, roughness: 0.55 });
+
+  const hall = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.035, 0.1), hallMat);
+  hall.position.set(0, 0.018, 0);
+  g.add(hall);
+
+  for (let i = -1; i <= 1; i++) {
+    const vent = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.012, 0.022), roofMat);
+    vent.position.set(i * 0.045, 0.043, 0);
+    g.add(vent);
+  }
+
   const stack = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.025, 0.18, 8), baseMat);
-  stack.position.y = 0.09;
+  stack.position.set(0.075, 0.13, 0.03);
   g.add(stack);
   const cap = new THREE.Mesh(new THREE.TorusGeometry(0.022, 0.005, 6, 12), baseMat);
-  cap.position.y = 0.18;
+  cap.position.set(0.075, 0.22, 0.03);
   cap.rotation.x = Math.PI / 2;
   g.add(cap);
 
@@ -880,7 +1157,7 @@ function makeSmokestack() {
   const smokeParticles = [];
   for (let i = 0; i < 6; i++) {
     const s = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), smokeMat.clone());
-    s.position.set(0, 0.2 + i * 0.04, 0);
+    s.position.set(0.075, 0.23 + i * 0.04, 0.03);
     s.userData.offset = i * 0.04;
     smokeParticles.push(s);
     g.add(s);
@@ -915,54 +1192,148 @@ pollutionShell.visible = false;
 earthGroup.add(pollutionShell);
 
 // ============================================================
-// WHAT IF? — INPUT/OUTPUT CALCULATIONS
+// WHAT ELSE? — INPUT/OUTPUT CALCULATIONS
 // ============================================================
-// Real-world numbers, sourced from common engineering estimates.
-// Energies in kWh/year unless noted.
+// Rough planning estimates. Energies are kWh/year unless noted.
+// Utility-scale PV land: NREL has reported about 7.3 acres/MWac.
+// With a 25% capacity factor, that is about 300 MWh per acre per year.
+const SOLAR_KWH_PER_ACRE_YR = 300_000;
+const SOLAR_COST_PER_MW = 1_300_000;
+const ACRES_PER_MW_SOLAR = 7.3;
 
-// Solar farm production — utility-scale PV in good locations,
-// accounting for spacing, panel efficiency (~20%), capacity factor (~22%):
-//   ~200 GWh/km²/year = 200,000,000 kWh/km²/year
-const SOLAR_KWH_PER_KM2_YR = 200_000_000;
+const HOME_KWH_YR        = 10_800;
+const DATA_CENTER_KWH_YR = 876_000_000;   // 100 MW continuous load
+const EV_KWH_YR          = 4_000;
+const HOSPITAL_KWH_YR    = 30_000_000;
+const COAL_PLANT_KWH_YR  = 4_380_000_000; // 1 GW at 50% capacity factor
+const COAL_CO2_PER_KWH   = 0.82;          // kg
+const DESAL_KWH_PER_M3   = 3;
 
-// Modern wind turbine: ~3 MW rated, ~35% capacity factor
-//   = 3000 kW * 8760 hr * 0.35 ≈ 9.2 GWh/year
-const WIND_KWH_PER_TURBINE_YR = 9_200_000;
-
-// Consumers (annual energy use):
-const HOME_KWH_YR        = 10_800;        // average US household
-const MANHATTAN_KWH_YR   = 11_000_000_000; // ~11 TWh for Manhattan (residential+commercial)
-const EV_KWH_YR          = 4_000;          // 12,000 mi at 3 mi/kWh
-const HOSPITAL_KWH_YR    = 30_000_000;     // large hospital
-const COAL_PLANT_KWH_YR  = 4_380_000_000;  // 1 GW @ 50% CF
-const COAL_CO2_PER_KWH   = 0.82;           // kg
-const DESAL_KWH_PER_M3   = 3;              // RO desal, kWh per m³
-
-const WORLD_ELEC_TWH_YR  = 30_000;         // global electricity demand ~30 PWh
+const RESEARCH_GRANT_COST = 500_000;
+const STEM_SCHOLARSHIP_COST = 50_000;
+const BRIDGE_REPAIR_COST = 10_000_000;
+const ELECTRIC_BUS_COST = 600_000;
+const PUBLIC_LAB_COST = 250_000_000;
+const GRID_BATTERY_MWH_COST = 400_000;
+const COMMUNITY_CLINIC_COST = 5_000_000;
+const DOCTOR_YEAR_COST = 220_000;
+const NURSE_YEAR_COST = 120_000;
+const MEDICAL_TRIAL_GRANT_COST = 2_000_000;
+const STEM_TEACHER_YEAR_COST = 85_000;
+const STEM_LAB_COST = 1_500_000;
+const UNIVERSITY_RESEARCH_CENTER_COST = 150_000_000;
 
 // Slider state — log scale
-//   solar: 10^x km², x from 0 to 7 (1 km² to 10M km²)
-//   wind:  10^x turbines, x from 0 to 6 (1 to 1M turbines)
-let source = 'solar';
-let amountExp = 2; // start at 100
+//   land:   10^x acres, x from 1 to 5 (10 to 100K acres)
+//   budget: 10^x dollars, x from 9 to 12.3 ($1B to ~$2T)
+//   country: button-selected regional spending from rounded SIPRI 2025 estimates
+let source = 'land';
+let amountExp = 3; // start at 1,000 acres
+let selectedCountryIndex = 0;
+
+const COUNTRY_SPENDING = [
+  { country: 'The Americas', spending: 1_070_000_000_000, lat: 14, lon: -88 },
+  { country: 'Europe', spending: 864_000_000_000, lat: 52, lon: 15 },
+  { country: 'Asia and Oceania', spending: 680_000_000_000, lat: 27, lon: 105 },
+  { country: 'Middle East', spending: 218_000_000_000, lat: 29, lon: 45 },
+  { country: 'Africa', spending: 55_000_000_000, lat: 1, lon: 20 },
+];
 
 const PRESETS = {
-  solar: [
-    { label: 'Football field (0.007)', exp: Math.log10(0.007) },
-    { label: 'Manhattan (59)',         exp: Math.log10(59) },
-    { label: 'Singapore (730)',        exp: Math.log10(730) },
-    { label: 'Belgium (30K)',          exp: Math.log10(30000) },
-    { label: 'Texas (696K)',           exp: Math.log10(696000) },
-    { label: 'Sahara (9.2M)',          exp: Math.log10(9_200_000) },
+  land: [
+    { label: 'Small campus (50)',       exp: Math.log10(50) },
+    { label: 'Mega campus (500)',       exp: Math.log10(500) },
+    { label: 'Regional buildout (2K)',  exp: Math.log10(2_000) },
+    { label: 'County-scale (10K)',      exp: Math.log10(10_000) },
+    { label: 'State-scale (50K)',       exp: Math.log10(50_000) },
   ],
-  wind: [
-    { label: '1 turbine',           exp: 0 },
-    { label: 'Wind farm (200)',     exp: Math.log10(200) },
-    { label: 'Large fleet (10K)',   exp: Math.log10(10_000) },
-    { label: 'Country-scale (100K)',exp: Math.log10(100_000) },
-    { label: 'Global fleet (1M)',   exp: 6 },
+  budget: [
+    { label: '$1B',          exp: 9 },
+    { label: '$17.8B S&T',   exp: Math.log10(17_800_000_000) },
+    { label: '$100B',        exp: 11 },
+    { label: '$814B defense',exp: Math.log10(814_000_000_000) },
+    { label: '$2T wars',     exp: Math.log10(2_000_000_000_000) },
   ],
+  country: COUNTRY_SPENDING.map((entry, index) => ({ label: entry.country, index })),
 };
+
+// Continent-glow lifecycle. Generating the texture on selection change is
+// cheap (one 1024x512 canvas) and avoids a custom shader path.
+let continentGlowTex = null;
+const earthBaseEmissive = earth.material.emissive.getHex();
+const earthBaseEmissiveIntensity = earth.material.emissiveIntensity;
+
+function applyContinentGlow() {
+  if (continentGlowTex) continentGlowTex.dispose();
+  continentGlowTex = makeContinentGlowTexture(COUNTRY_SPENDING[selectedCountryIndex].country);
+  earth.material.emissiveMap = continentGlowTex;
+  earth.material.emissive.setHex(0xffffff);
+  earth.material.emissiveIntensity = 1.1;
+  earth.material.needsUpdate = true;
+}
+
+function clearContinentGlow() {
+  if (continentGlowTex) { continentGlowTex.dispose(); continentGlowTex = null; }
+  earth.material.emissiveMap = null;
+  earth.material.emissive.setHex(earthBaseEmissive);
+  earth.material.emissiveIntensity = earthBaseEmissiveIntensity;
+  earth.material.needsUpdate = true;
+}
+
+function updateCountryMarkers() {
+  document.getElementById('selected-region-name').textContent = COUNTRY_SPENDING[selectedCountryIndex].country;
+  if (mode === 'cosmic' && source === 'country') applyContinentGlow();
+  if (typeof refreshRegionRows === 'function') refreshRegionRows();
+}
+
+function selectCountry(index) {
+  selectedCountryIndex = index;
+  source = 'country';
+  document.querySelectorAll('.src-tab').forEach(t => t.classList.toggle('active', t.dataset.src === 'country'));
+  slider.style.display = 'none';
+  document.getElementById('country-search-wrap').classList.add('active');
+  document.getElementById('map-hint').classList.add('active');
+  document.getElementById('region-block').classList.add('active');
+  document.getElementById('country-search').value = COUNTRY_SPENDING[index].country;
+  updateCountryMarkers();
+  buildPresets();
+  updateWhatIf();
+}
+
+// Raycast against the earth sphere, convert hit point back to lat/lon
+// (inverse of latLonToVec3), then pick the nearest continent center.
+const earthRaycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+const _localHit = new THREE.Vector3();
+
+function nearestContinentIndex(lat, lon) {
+  let best = 0, bestDist = Infinity;
+  const cosLat = Math.cos(lat * Math.PI / 180);
+  COUNTRY_SPENDING.forEach((entry, i) => {
+    const dlat = lat - entry.lat;
+    const dlon = ((lon - entry.lon + 540) % 360) - 180;
+    const d = Math.sqrt(dlat * dlat + (dlon * cosLat) ** 2);
+    if (d < bestDist) { bestDist = d; best = i; }
+  });
+  return best;
+}
+
+canvas.addEventListener('click', event => {
+  if (mode !== 'cosmic' || source !== 'country') return;
+  const rect = canvas.getBoundingClientRect();
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  earthRaycaster.setFromCamera(pointer, camera);
+  const hits = earthRaycaster.intersectObject(earth, false);
+  if (!hits.length) return;
+  _localHit.copy(hits[0].point);
+  earth.worldToLocal(_localHit);
+  const r = _localHit.length();
+  const lat = 90 - Math.acos(_localHit.y / r) * 180 / Math.PI;
+  let lon = (Math.atan2(_localHit.z, -_localHit.x) * 180 / Math.PI) - 180;
+  lon = ((lon + 540) % 360) - 180;
+  selectCountry(nearestContinentIndex(lat, lon));
+});
 
 function fmtNumber(n) {
   if (!isFinite(n) || isNaN(n)) return '—';
@@ -976,17 +1347,13 @@ function fmtNumber(n) {
 }
 
 function fmtAmount(value, src) {
-  if (src === 'solar') {
-    if (value < 1) return value.toFixed(3);
-    if (value < 100) return value.toFixed(1);
-    if (value < 1000) return value.toFixed(0);
-    if (value < 1e6) return (value/1e3).toFixed(1) + 'K';
-    return (value/1e6).toFixed(2) + 'M';
-  } else {
-    if (value < 1000) return Math.round(value).toLocaleString();
-    if (value < 1e6) return (value/1e3).toFixed(1) + 'K';
-    return (value/1e6).toFixed(2) + 'M';
+  if (src === 'budget') {
+    if (value < 1e12) return '$' + (value / 1e9).toFixed(value < 10e9 ? 1 : 0) + 'B';
+    return '$' + (value / 1e12).toFixed(2) + 'T';
   }
+  if (value < 1000) return Math.round(value).toLocaleString();
+  if (value < 1e6) return (value/1e3).toFixed(1) + 'K';
+  return (value/1e6).toFixed(2) + 'M';
 }
 
 function fmtTWh(kwh) {
@@ -998,40 +1365,131 @@ function fmtTWh(kwh) {
   return (twh/1e6).toFixed(2) + ' EWh';
 }
 
+function setCardLabels(labels) {
+  Object.entries(labels).forEach(([id, text]) => {
+    document.getElementById(id).textContent = text;
+  });
+}
+
 function updateWhatIf() {
   const value = Math.pow(10, amountExp);
-  const totalKWh = source === 'solar'
-    ? value * SOLAR_KWH_PER_KM2_YR
-    : value * WIND_KWH_PER_TURBINE_YR;
 
-  // amount display
-  document.getElementById('amount-num').textContent = fmtAmount(value, source);
+  if (source !== 'country') {
+    document.getElementById('amount-num').textContent = fmtAmount(value, source);
+  }
+
+  if (source === 'country') {
+    updateCountryWhatIf();
+    return;
+  }
+
+  if (source === 'land') {
+    const acres = value;
+    const totalKWh = acres * SOLAR_KWH_PER_ACRE_YR;
+    document.getElementById('amount-unit').textContent = 'acres turned into solar farms';
+    document.getElementById('total-label').textContent = 'Annual solar output';
+    document.getElementById('total-output').textContent = fmtTWh(totalKWh);
+    document.getElementById('total-pct').textContent =
+      '= ' + fmtNumber(totalKWh / HOME_KWH_YR) + ' US homes powered';
+    document.getElementById('detail-sub').textContent = 'Annual results from reclaimed land.';
+    setCardLabels({
+      'l-homes': 'US homes powered',
+      'l-cities': '100 MW data centers offset',
+      'l-cars': 'EVs driven yearly',
+      'l-hospitals': 'large hospitals powered',
+      'l-coal': 'coal plants displaced',
+      'l-co2': 'tons CO2 avoided / yr',
+      'l-water': 'liters of seawater desalinated'
+    });
+    document.getElementById('o-homes').textContent     = fmtNumber(totalKWh / HOME_KWH_YR);
+    document.getElementById('o-cities').textContent    = fmtNumber(totalKWh / DATA_CENTER_KWH_YR);
+    document.getElementById('o-cars').textContent      = fmtNumber(totalKWh / EV_KWH_YR);
+    document.getElementById('o-hospitals').textContent = fmtNumber(totalKWh / HOSPITAL_KWH_YR);
+    document.getElementById('o-coal').textContent      = fmtNumber(totalKWh / COAL_PLANT_KWH_YR);
+    document.getElementById('o-co2').textContent       = fmtNumber(totalKWh * COAL_CO2_PER_KWH / 1000);
+    document.getElementById('o-water').textContent     = fmtNumber(totalKWh / DESAL_KWH_PER_M3 * 1000) + ' L';
+    return;
+  }
+
+  const dollars = value;
+  const medicineBudget = dollars * 0.45;
+  const stemBudget = dollars * 0.45;
+  const renewablesBudget = dollars * 0.10;
+  const solarMw = renewablesBudget / SOLAR_COST_PER_MW;
+  const solarAcres = solarMw * ACRES_PER_MW_SOLAR;
+  const totalKWh = solarAcres * SOLAR_KWH_PER_ACRE_YR;
+  document.getElementById('amount-unit').textContent = 'redirected from war into medicine and STEM';
+  document.getElementById('total-label').textContent = 'Medicine / STEM / clean energy';
+  document.getElementById('total-output').textContent =
+    fmtAmount(medicineBudget, 'budget') + ' / ' + fmtAmount(stemBudget, 'budget') + ' / ' + fmtAmount(renewablesBudget, 'budget');
+  document.getElementById('total-pct').textContent =
+    '= ' + fmtTWh(totalKWh) + ' / yr from the clean-energy slice';
+  document.getElementById('detail-sub').textContent = 'A rough alternative use of the same money.';
+  setCardLabels({
+    'l-homes': 'community clinics built',
+    'l-cities': 'medical research grants',
+    'l-cars': 'doctor-years funded',
+    'l-hospitals': 'nurse-years funded',
+    'l-coal': 'STEM scholarships',
+    'l-co2': 'school STEM labs',
+    'l-water': 'homes powered by clean-energy slice'
+  });
+  document.getElementById('o-homes').textContent     = fmtNumber(medicineBudget / COMMUNITY_CLINIC_COST);
+  document.getElementById('o-cities').textContent    = fmtNumber(medicineBudget / MEDICAL_TRIAL_GRANT_COST);
+  document.getElementById('o-cars').textContent      = fmtNumber(medicineBudget / DOCTOR_YEAR_COST);
+  document.getElementById('o-hospitals').textContent = fmtNumber(medicineBudget / NURSE_YEAR_COST);
+  document.getElementById('o-coal').textContent      = fmtNumber(stemBudget / STEM_SCHOLARSHIP_COST);
+  document.getElementById('o-co2').textContent       = fmtNumber(stemBudget / STEM_LAB_COST);
+  document.getElementById('o-water').textContent     = fmtNumber(totalKWh / HOME_KWH_YR);
+}
+
+function updateCountryWhatIf() {
+  const entry = COUNTRY_SPENDING[selectedCountryIndex];
+  const dollars = entry.spending;
+  const medicineBudget = dollars * 0.45;
+  const stemBudget = dollars * 0.45;
+  const renewablesBudget = dollars * 0.10;
+  const solarMw = renewablesBudget / SOLAR_COST_PER_MW;
+  const solarAcres = solarMw * ACRES_PER_MW_SOLAR;
+  const totalKWh = solarAcres * SOLAR_KWH_PER_ACRE_YR;
+
+  document.getElementById('amount-num').textContent = fmtAmount(dollars, 'budget');
   document.getElementById('amount-unit').textContent =
-    source === 'solar' ? 'km² of solar panels' : 'wind turbines';
-
-  // total output
-  document.getElementById('total-output').textContent = fmtTWh(totalKWh);
-  const pctWorld = (totalKWh / 1e9) / WORLD_ELEC_TWH_YR * 100;
-  let pctText;
-  if (pctWorld < 0.001) pctText = '= ' + pctWorld.toExponential(1) + '% of world electricity';
-  else if (pctWorld < 1) pctText = '= ' + pctWorld.toFixed(3) + '% of world electricity';
-  else if (pctWorld < 100) pctText = '= ' + pctWorld.toFixed(1) + '% of world electricity';
-  else pctText = '= ' + fmtNumber(pctWorld/100) + '× world electricity use';
-  document.getElementById('total-pct').textContent = pctText;
-
-  // outputs
-  document.getElementById('o-homes').textContent     = fmtNumber(totalKWh / HOME_KWH_YR);
-  document.getElementById('o-cities').textContent    = fmtNumber(totalKWh / MANHATTAN_KWH_YR);
-  document.getElementById('o-cars').textContent      = fmtNumber(totalKWh / EV_KWH_YR);
-  document.getElementById('o-hospitals').textContent = fmtNumber(totalKWh / HOSPITAL_KWH_YR);
-  document.getElementById('o-coal').textContent      = fmtNumber(totalKWh / COAL_PLANT_KWH_YR);
-  document.getElementById('o-co2').textContent       = fmtNumber(totalKWh * COAL_CO2_PER_KWH / 1000); // tons
-  document.getElementById('o-water').textContent     = fmtNumber(totalKWh / DESAL_KWH_PER_M3 * 1000) + ' L'; // m³ → L
+    entry.country + ' — annual military spending (rounded 2025 estimate)';
+  document.getElementById('total-label').textContent = 'Medicine / STEM / clean energy';
+  document.getElementById('total-output').textContent =
+    fmtAmount(medicineBudget, 'budget') + ' / ' + fmtAmount(stemBudget, 'budget') + ' / ' + fmtAmount(renewablesBudget, 'budget');
+  document.getElementById('total-pct').textContent =
+    '= ' + fmtTWh(totalKWh) + ' / yr from the clean-energy slice';
+  document.getElementById('detail-sub').textContent =
+    'Search or click a glowing continent. This is a rough annual alternative, not a budget proposal.';
+  setCardLabels({
+    'l-homes': 'community clinics built',
+    'l-cities': 'medical research grants',
+    'l-cars': 'doctor-years funded',
+    'l-hospitals': 'nurse-years funded',
+    'l-coal': 'STEM scholarships',
+    'l-co2': 'school STEM labs',
+    'l-water': 'university research centers'
+  });
+  document.getElementById('o-homes').textContent     = fmtNumber(medicineBudget / COMMUNITY_CLINIC_COST);
+  document.getElementById('o-cities').textContent    = fmtNumber(medicineBudget / MEDICAL_TRIAL_GRANT_COST);
+  document.getElementById('o-cars').textContent      = fmtNumber(medicineBudget / DOCTOR_YEAR_COST);
+  document.getElementById('o-hospitals').textContent = fmtNumber(medicineBudget / NURSE_YEAR_COST);
+  document.getElementById('o-coal').textContent      = fmtNumber(stemBudget / STEM_SCHOLARSHIP_COST);
+  document.getElementById('o-co2').textContent       = fmtNumber(stemBudget / STEM_LAB_COST);
+  document.getElementById('o-water').textContent     = fmtNumber(stemBudget / UNIVERSITY_RESEARCH_CENTER_COST);
 }
 
 function buildPresets() {
   const row = document.getElementById('preset-row');
   row.innerHTML = '';
+  if (source === 'country') {
+    // Comparison block replaces preset buttons in continent mode.
+    row.style.display = 'none';
+    return;
+  }
+  row.style.display = '';
   PRESETS[source].forEach(p => {
     const b = document.createElement('button');
     b.className = 'preset';
@@ -1045,23 +1503,82 @@ function buildPresets() {
   });
 }
 
+// Ranked continent comparison — all 5 regions shown with $ amount + bar.
+const regionBlock = document.getElementById('region-block');
+const regionRows = document.getElementById('region-rows');
+const globalTotalEl = document.getElementById('global-total');
+const globalMilitaryTotal = COUNTRY_SPENDING.reduce((s, e) => s + e.spending, 0);
+const maxRegionSpend = Math.max(...COUNTRY_SPENDING.map(e => e.spending));
+globalTotalEl.textContent = fmtAmount(globalMilitaryTotal, 'budget');
+
+const regionRowEls = COUNTRY_SPENDING
+  .map((entry, idx) => ({ entry, idx }))
+  .sort((a, b) => b.entry.spending - a.entry.spending)
+  .map(({ entry, idx }) => {
+    const row = document.createElement('div');
+    row.className = 'region-row';
+    row.dataset.idx = idx;
+    row.innerHTML =
+      '<div class="name">' + entry.country + '</div>' +
+      '<div class="amt">' + fmtAmount(entry.spending, 'budget') + '</div>' +
+      '<div class="bar-track"><div class="bar-fill" style="width:' + (entry.spending / maxRegionSpend * 100).toFixed(1) + '%"></div></div>';
+    row.addEventListener('click', () => {
+      selectedCountryIndex = idx;
+      updateCountryMarkers();
+      updateWhatIf();
+      refreshRegionRows();
+    });
+    regionRows.appendChild(row);
+    return { idx, el: row };
+  });
+
+function refreshRegionRows() {
+  regionRowEls.forEach(({ idx, el }) => {
+    el.classList.toggle('active', idx === selectedCountryIndex);
+  });
+}
+refreshRegionRows();
+
 // Wire up controls
 const slider = document.getElementById('amount-slider');
+const countrySearchWrap = document.getElementById('country-search-wrap');
+const countrySearch = document.getElementById('country-search');
+const mapHint = document.getElementById('map-hint');
 slider.addEventListener('input', e => {
   amountExp = parseFloat(e.target.value);
   updateWhatIf();
+});
+countrySearch.addEventListener('input', () => {
+  const query = countrySearch.value.trim().toLowerCase();
+  const foundIndex = COUNTRY_SPENDING.findIndex(entry => entry.country.toLowerCase().includes(query));
+  if (foundIndex >= 0) {
+    selectedCountryIndex = foundIndex;
+    updateCountryMarkers();
+    updateWhatIf();
+  }
+  buildPresets();
 });
 document.querySelectorAll('.src-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     source = tab.dataset.src;
     document.querySelectorAll('.src-tab').forEach(t => t.classList.toggle('active', t === tab));
-    // adjust slider range per source
-    if (source === 'solar') {
-      slider.min = 0; slider.max = 7; slider.step = 0.02;
-      if (amountExp > 7) amountExp = 2;
+    countrySearchWrap.classList.toggle('active', source === 'country');
+    mapHint.classList.toggle('active', source === 'country');
+    regionBlock.classList.toggle('active', source === 'country');
+    if (source === 'land') {
+      slider.min = 1; slider.max = 5; slider.step = 0.02;
+      if (amountExp < 1 || amountExp > 5) amountExp = 3;
+      slider.style.display = '';
+      clearContinentGlow();
+    } else if (source === 'budget') {
+      slider.min = 9; slider.max = 12.3; slider.step = 0.01;
+      if (amountExp < 9 || amountExp > 12.3) amountExp = 11;
+      slider.style.display = '';
+      clearContinentGlow();
     } else {
-      slider.min = 0; slider.max = 6; slider.step = 0.02;
-      if (amountExp > 6) amountExp = 3;
+      slider.style.display = 'none';
+      countrySearch.value = COUNTRY_SPENDING[selectedCountryIndex].country;
+      updateCountryMarkers();
     }
     slider.value = amountExp;
     buildPresets();
@@ -1099,9 +1616,21 @@ function setMode(m) {
   document.getElementById('benefits').style.display = cosmic ? 'none' : '';
   document.getElementById('cosmic').classList.toggle('active', cosmic);
 
-  if (cosmic) updateWhatIf();
+  if (cosmic) {
+    countrySearchWrap.classList.toggle('active', source === 'country');
+    mapHint.classList.toggle('active', source === 'country');
+    regionBlock.classList.toggle('active', source === 'country');
+    updateWhatIf();
+  } else {
+    regionBlock.classList.remove('active');
+  }
 
-  earth.material.emissive.setHex(renew || cosmic ? 0x112244 : 0x2a1810);
+  if (cosmic && source === 'country') {
+    applyContinentGlow();
+  } else {
+    clearContinentGlow();
+    if (fossil) earth.material.emissive.setHex(0x2a1810);
+  }
   document.querySelectorAll('.btn').forEach(b => {
     if (['renewable', 'fossil', 'cosmic'].includes(b.dataset.mode)) {
       b.classList.toggle('active', b.dataset.mode === m);
@@ -1143,6 +1672,11 @@ function animate() {
   rayGroup.children.forEach((line, i) => {
     line.material.opacity = 0.15 + Math.sin(t * 3 + line.userData.phase) * 0.15;
   });
+
+  // pulse continent glow when one is selected
+  if (continentGlowTex) {
+    earth.material.emissiveIntensity = 1.05 + Math.sin(t * 2.5) * 0.18;
+  }
 
   // smoke rising
   smokestacks.forEach((s) => {
